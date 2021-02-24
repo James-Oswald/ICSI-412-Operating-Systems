@@ -53,7 +53,7 @@ public class Kernel{
                     if(activeProcesses.size() > 0) // if there are other processes reschedule, else end the program
                         Reschedule();
                     else
-                        System.exit(0);
+                        System.exit(0);     //We just deleted ourself, the last process, there is nothing to reschedule
                 return;
             }
         }

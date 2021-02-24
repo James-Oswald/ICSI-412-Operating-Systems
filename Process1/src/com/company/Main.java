@@ -1,6 +1,7 @@
 package com.company;
 
 import java.util.concurrent.Callable;
+
 public class Main {
 
     public static class ExitTheThing implements Callable<Void> {
@@ -18,7 +19,7 @@ public class Main {
     }
     public static void main(String[] args) {
         Kernel k = new Kernel();
-        k.Init(new PrintTheThing());
+        //k.Init(new PrintTheThing());
         k.Init(
             () -> {KernelBindings.Print("Code Ran!",
                 () -> KernelBindings.Exit(0, null));

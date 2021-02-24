@@ -2,21 +2,21 @@ package com.company;
 
 public class GenericHAL {
 
-    public final int RegisterSize = 64; // How big our register storage is
-    public final Kernel kernel; // the kernel we are supporting
+    public final int RegisterSize = 64;                 // How big our register storage is
+    public final Kernel kernel;                         // the kernel we are supporting
 
-    public GenericHAL(Kernel k) { // HAL knows kernel; kernel knows HAL
+    public GenericHAL(Kernel k) {                       // HAL knows kernel; kernel knows HAL
         kernel = k;
     }
 
-    public void StoreProgramData(byte [] data) {} // Store registers to PCB. Does nothing in Java
-    public void RestoreProgramData(byte [] data) {} // Loads registers from PCB. IBID
+    public void StoreProgramData(byte [] data) {}       // Store registers to PCB. Does nothing in Java
+    public void RestoreProgramData(byte [] data) {}     // Loads registers from PCB. IBID
 
-    public enum SyscallNumbers { // the ID for each syscall
+    public enum SyscallNumbers {                        // the ID for each syscall
         Exit,Print
     }
 
-    public enum InterruptTypes { // the interrupt numbers. In a real machine, these would be architecture specific
+    public enum InterruptTypes {                        // the interrupt numbers. In a real machine, these would be architecture specific
         Syscall
     }
 

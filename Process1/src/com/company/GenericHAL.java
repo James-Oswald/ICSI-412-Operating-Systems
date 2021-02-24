@@ -2,7 +2,7 @@ package com.company;
 
 public class GenericHAL {
 
-    public final int RegisterSize = 64;                 // How big our register storage is
+    public final int RegisterSize = 64;          // How big our register storage is
     public final Kernel kernel;                         // the kernel we are supporting
 
     public GenericHAL(Kernel k) {                       // HAL knows kernel; kernel knows HAL
@@ -40,6 +40,7 @@ public class GenericHAL {
         }
         catch (Exception e) {
             System.out.println("You have a serious error: " + e.getMessage());
+            e.printStackTrace();
             System.exit(1);
             return null;
         }
@@ -47,9 +48,6 @@ public class GenericHAL {
 
     public void RunCode() { // This is our Java hack for no PC control.
         while (true) {
-            if (kernel.current.action == null) { // THIS IS TEMPORARY - GET RID OF IT WHEN YOU IMPLEMENT DELETEPROCESS
-                System.exit(0);
-            }
             try {
                 kernel.current.action.call(); // Run the next callable on the current PCB
             } catch (SyscallException e) // This exception indicates that we are doing a syscall
@@ -58,6 +56,7 @@ public class GenericHAL {
                 HandleInterrupt(InterruptTypes.Syscall, e.which, e.param);
             } catch (Exception e) {
                 System.out.println("Some other exception occurred.");
+                e.printStackTrace();
             }
         } // After the syscall/interrupt, run "userland" code
     }

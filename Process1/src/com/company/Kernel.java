@@ -18,9 +18,9 @@ public class Kernel{
     public ArrayList<PCB> activeProcesses = new ArrayList<PCB>();
 
     // called once when the system is started
-    public void Init(Callable<?> c){                    
+    public void Init(Callable<?> code){                    
         final PCB pcb = new PCB();                     
-        pcb.action = c;                               
+        pcb.action = code;                               
         pcb.pid = 0;
         pcb.registers = new byte[hal.RegisterSize];
         current = pcb;
@@ -33,17 +33,35 @@ public class Kernel{
         pcb.action = code;                               
         pcb.pid = pidCounter;
         pcb.registers = new byte[hal.RegisterSize];
-        activeProcesses.add(pcb);
         pidCounter++;
+        activeProcesses.add(pcb);
         return pcb.pid;
     }
 
     public void Reschedule(){
-        
+        hal.StoreProgramData(current.registers);
+        current = activeProcesses.get(0);
+        hal.RestoreProgramData(current.registers);
+    }
+
+    public void DeleteProcess(int pid){
+        for(int i = 0; i < activeProcesses.size(); i++){ //linear search for active process
+            PCB curProc = activeProcesses.get(i);
+            if(curProc.pid == pid){
+                activeProcesses.remove(i);  //O(1) removal of curProc from activeProcesses by index
+                if(curProc == current)      //current process is deleting itself
+                    if(activeProcesses.size() > 0) // if there are other processes reschedule, else end the program
+                        Reschedule();
+                    else
+                        System.exit(0);
+                return;
+            }
+        }
     }
 
     // Exit syscall. Needs more work when we finish processes
-    public Object Exit(){                              
+    public Object Exit(){
+        DeleteProcess(current.pid);                           
         return 0;
     }
 

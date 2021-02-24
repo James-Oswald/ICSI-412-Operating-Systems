@@ -18,13 +18,14 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        Kernel k = new Kernel();
-        //k.Init(new PrintTheThing());
-        k.Init(
-            () -> {KernelBindings.Print("Code Ran!",
-                () -> KernelBindings.Exit(0, null));
-                return null;
-            }
-        );
+        Kernel kernal = new Kernel();
+        kernal.Init(() ->{
+            kernal.CreateProcess(()->KernelBindings.Print("Process 1", ()->KernelBindings.Exit(0, null)));
+            kernal.CreateProcess(()->KernelBindings.Print("Process 2", ()->KernelBindings.Exit(0, null)));
+            kernal.CreateProcess(()->KernelBindings.Print("Process 3", ()->KernelBindings.Exit(0, null)));
+            kernal.CreateProcess(()->KernelBindings.Print("Process 4", ()->KernelBindings.Exit(0, null)));
+            KernelBindings.Exit(0, null);
+            return null;
+        });
     }
 }

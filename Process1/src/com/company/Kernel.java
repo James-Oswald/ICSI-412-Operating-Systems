@@ -8,14 +8,14 @@ public class Kernel{
     //inner class represting a process
     public class PCB{               // Process control block. Needs to be filled in.
         public Callable<?> action;  // The next code block to run for this process                    
-        public int pid;
+        public int pid;             // The process ID
         public byte[] registers;    // register states
     }
 
     public PCB current;                            // the currently running process
-    public int pidCounter = 1;                     // the pid of the next created process
+    public int pidCounter = 1;                     // the pid of the next created process, 1 because init is our process 0
     public GenericHAL hal = new GenericHAL(this);  // the HAL our kernel is running on                
-    public ArrayList<PCB> activeProcesses = new ArrayList<PCB>();
+    public ArrayList<PCB> activeProcesses = new ArrayList<PCB>(); //List of all active processes
 
     // called once when the system is started
     public void Init(Callable<?> code){                    
@@ -28,6 +28,7 @@ public class Kernel{
         hal.RunCode();                            
     }
 
+    //Create a new process, takes code to be ran in the new process
     public int CreateProcess(Callable<?> code){
         PCB pcb = new PCB();                     
         pcb.action = code;                               
@@ -44,28 +45,29 @@ public class Kernel{
         hal.RestoreProgramData(current.registers);
     }
 
+    //Deletes the current process by its pid
     public void DeleteProcess(int pid){
         for(int i = 0; i < activeProcesses.size(); i++){ //linear search for active process
-            PCB curProc = activeProcesses.get(i);
-            if(curProc.pid == pid){
-                activeProcesses.remove(i);  //O(1) removal of curProc from activeProcesses by index
-                if(curProc == current)      //current process is deleting itself
-                    if(activeProcesses.size() > 0) // if there are other processes reschedule, else end the program
+            if(activeProcesses.get(i).pid == pid){
+                activeProcesses.remove(i);              //O(1) removal of selected process from activeProcesses by index
+                if(activeProcesses.get(i) == current)   //current process is deleting itself
+                    if(activeProcesses.size() > 0)      //if there are other processes reschedule, else end the program
                         Reschedule();
                     else
-                        System.exit(0);     //We just deleted ourself, the last process, there is nothing to reschedule
+                        System.exit(0);  //We just deleted ourself, the last process, there is nothing to reschedule
                 return;
             }
         }
     }
 
-    // Exit syscall. Needs more work when we finish processes
+    // Exit deletes the current process    
     public Object Exit(){
-        DeleteProcess(current.pid);                           
+        DeleteProcess(current.pid);                        
         return 0;
     }
 
-    public void Print(String str){                       // Print a line
+    // Print a line
+    public void Print(String str){  
         System.out.println(str);
     }
 }

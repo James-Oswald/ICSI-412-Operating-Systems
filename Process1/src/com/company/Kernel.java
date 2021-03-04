@@ -48,9 +48,10 @@ public class Kernel{
     //Deletes the current process by its pid
     public void DeleteProcess(int pid){
         for(int i = 0; i < activeProcesses.size(); i++){ //linear search for active process
-            if(activeProcesses.get(i).pid == pid){
+            PCB selectedProcess = activeProcesses.get(i);
+            if(selectedProcess.pid == pid){
                 activeProcesses.remove(i);              //O(1) removal of selected process from activeProcesses by index
-                if(activeProcesses.get(i) == current)   //current process is deleting itself
+                if(selectedProcess == current)   //current process is deleting itself
                     if(activeProcesses.size() > 0)      //if there are other processes reschedule, else end the program
                         Reschedule();
                     else

@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 import java.util.concurrent.Callable;
 
@@ -16,5 +16,21 @@ public class KernelBindings{
     //Takes code to create a process with and code for the next action in the current process
     public static Object CreateProcess(Callable<?> process, Callable<?> next) throws SyscallException{
         throw new SyscallException(GenericHAL.SyscallNumbers.CreateProcess, next, process);
+    }
+
+    public static Object CreateMutex(String name, Callable<?> next) throws SyscallException{
+        throw new SyscallException(GenericHAL.SyscallNumbers.CreateMutex, next, name);
+    }
+
+    public static Object GetMutexAccess(String name, Callable<?> next) throws SyscallException{
+        throw new SyscallException(GenericHAL.SyscallNumbers.GetMutexAccess, next, name);
+    }
+
+    public static Object ReleaseMutex(String name, Callable<?> next) throws SyscallException{
+        throw new SyscallException(GenericHAL.SyscallNumbers.ReleaseMutex, next, name);
+    }
+
+    public static Object DeleteMutex(String name, Callable<?> next) throws SyscallException{
+        throw new SyscallException(GenericHAL.SyscallNumbers.DeleteMutex, next, name);
     }
 }

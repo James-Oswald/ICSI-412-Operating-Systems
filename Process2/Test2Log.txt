@@ -1,0 +1,28 @@
+1 made syscall CreateProcess
+Process 1 has created process 2
+1 was rescheduled for 2
+2 made syscall CreateMutex
+2 has created mutex: Mutex1
+2 was rescheduled for 1
+1 made syscall CreateProcess
+Process 1 has created process 3
+1 was rescheduled for 2
+2 made syscall Print
+2 was rescheduled for 3
+3 made syscall GetMutexAccess
+3 has requested access to mutex: Mutex1
+3 has requested access to mutex: Mutex1
+3 was rescheduled for 1
+1 made syscall Exit
+1 was rescheduled for 2
+2 made syscall ReleaseMutex
+2 has released mutex: Mutex1
+2 was rescheduled for 3
+3 made syscall Print
+3 was rescheduled for 2
+2 made syscall Exit
+2 was rescheduled for 3
+3 made syscall DeleteMutex
+3 has deleted mutex: Mutex1
+3 was rescheduled for 3
+3 made syscall Exit

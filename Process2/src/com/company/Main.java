@@ -1,7 +1,11 @@
-package com.company;
+
+//package com.company;
 
 public class Main{
-    public static void main(String[] args) {
+
+    //Same thing as last time, test that processes can be created.
+    public static void test1(){
+        KernelLog.newLog("./Test1Log.txt");
         Kernel kernal = new Kernel();                   //The structure of crating processes is recursive so I outline it once
         kernal.Init(() ->                               //each parameter gets its own line to make this function hell readable
             KernelBindings.CreateProcess(               
@@ -25,6 +29,49 @@ public class Main{
                     )
                 )
             )
-        );  
+        );
+    }
+
+    public static void test2(){
+        KernelLog.newLog("./Test2Log.txt");
+        Kernel kernal = new Kernel(); 
+        kernal.Init(
+            ()->KernelBindings.CreateProcess(
+                ()->KernelBindings.CreateMutex(
+                    "Mutex1",
+                    ()->KernelBindings.Print(              
+                        "Mutex Print",
+                        ()->KernelBindings.ReleaseMutex(
+                            "Mutex1",   
+                            ()->KernelBindings.Exit(0, null)
+                        )
+                    )
+                ), 
+                ()->KernelBindings.CreateProcess(
+                    ()->KernelBindings.GetMutexAccess(
+                        "Mutex1",
+                        ()->KernelBindings.Print(              
+                            "Mutex Print",
+                            ()->KernelBindings.DeleteMutex(
+                                "Mutex1",   
+                                ()->KernelBindings.Exit(0, null)
+                            )
+                        )
+                    ),
+                    ()->KernelBindings.Exit(0, null)
+                )
+            )
+        ); 
+    }
+
+    public static void main(String[] args) {
+        String test = "1";
+        if(args.length >= 1)
+            test = args[0];
+        System.out.println("Test" + test + ":");
+        if(test.equals("1"))
+            test1();
+        else
+            test2();
     }
 }

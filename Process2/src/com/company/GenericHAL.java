@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 import java.util.concurrent.Callable;
 
@@ -15,7 +15,8 @@ public class GenericHAL{
     public void RestoreProgramData(byte [] data){}     // Loads registers from PCB. IBID
 
     public enum SyscallNumbers{                        // the ID for each syscall
-        Exit, Print, CreateProcess
+        Exit, Print, CreateProcess, 
+        CreateMutex, GetMutexAccess, ReleaseMutex, DeleteMutex
     }
 
     public enum InterruptTypes{                        // the interrupt numbers. In a real machine, these would be architecture specific
@@ -29,6 +30,7 @@ public class GenericHAL{
                 //For syscalls, dispatch based on the syscall #
                 case Syscall:                       
                     SyscallNumbers syscallNumber = (SyscallNumbers) p1;
+                    KernelLog.log("" + kernel.current.pid + " made syscall " + syscallNumber.name());
                     switch(syscallNumber){
                         case Exit:
                             return kernel.Exit();
@@ -37,7 +39,19 @@ public class GenericHAL{
                             return null;
                         case CreateProcess: 
                             //if syscallNumber is CreateProcess we know our p2 is really a callable so we upcast it back.    
-                            return kernel.CreateProcess((Callable<?>)p2);  
+                            return kernel.CreateProcess((Callable<?>)p2);
+                        case CreateMutex:
+                            kernel.CreateMutex((String)p2);
+                            return null;
+                        case GetMutexAccess:
+                            kernel.GetMutexAccess((String)p2);
+                            return null;
+                        case ReleaseMutex:
+                            kernel.ReleaseMutex((String)p2);
+                            return null;
+                        case DeleteMutex:
+                            kernel.DeleteMutex((String)p2);
+                            return null;
                         default:
                             throw new Exception("What syscall is that?");
                     }
@@ -57,14 +71,16 @@ public class GenericHAL{
         while (true){
             try{
                 kernel.current.action.call();       // Run the next callable on the current PCB
+                throw new Exception("No syscall!");
             } catch (SyscallException e){           // This exception indicates that we are doing a syscall
                 kernel.current.action = e.next;     // Set the next action for this process to the one chained in the exception
                 HandleInterrupt(InterruptTypes.Syscall, e.which, e.param);
+                kernel.Reschedule();                //We reschedule after every syscall
             } catch (Exception e) {
                 System.out.println("Some other exception occurred.");
                 e.printStackTrace();
+                break;
             }
         }                                           // After the syscall/interrupt, run "userland" code
     }
-
 }
